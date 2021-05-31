@@ -1,45 +1,47 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Threading.Tasks;
+using App.Core.Application.Dto;
+using App.Core.Application.Interfaces;
 using App.Core.Domain.Entities;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 
 namespace App
 {
+    [ApiController]
+    [Route("[controller]")]
     public class AppointmentsController : ControllerBase
     {
-        public AppointmentsController()
-        {
+        private readonly IAppointmentService _appointmentService;
+        private readonly IMapper _mapper;
 
+        public AppointmentsController(IAppointmentService appointmentService, IMapper mapper)
+        {
+            _appointmentService = appointmentService;
+            _mapper = mapper;
         }
 
-        public IEnumerable<Appointment> Get()
+        [HttpGet]
+        public async Task<IEnumerable<AppointmentDto>> Get()
         {
-            var list = new List<Appointment>();
+            var appointments = await _appointmentService.GetAllAsync();
+            return _mapper.Map<IEnumerable<AppointmentDto>>(appointments);
+        }
 
-            list.Add(new Appointment
+        [HttpPost]
+        [Route("CreateAppointment")]
+        public async Task CreateAppointment(AppointmentDto appointment)
+        {
+            try
             {
-                Id = 1,
-                Name = "Gunnar",
-                Email = "ds@dfd.se",
-                PhoneNumber = "+4670051541514",
-                StartTime = DateTime.Now.AddHours(1),
-                EndTime = DateTime.Now.AddHours(2),
-                Date = DateTime.Now.AddHours(1)
-            });
-
-            list.Add(new Appointment
+                var newAppointment = _mapper.Map<Appointment>(appointment);
+                await _appointmentService.CreateAppointment(newAppointment);
+            }
+            catch (Exception ex)
             {
-                Id = 2,
-                Name = "Test",
-                Email = "hej@hej.se",
-                PhoneNumber = "saknas",
-                StartTime = DateTime.Now.AddHours(3),
-                EndTime = DateTime.Now.AddHours(4),
-                Date = DateTime.Now.AddHours(3)
-            });
-
-            return list.OrderBy(a => a.StartTime);
+                throw new ArgumentException("Should throw an nice error", ex);
+            }
         }
     }
 }

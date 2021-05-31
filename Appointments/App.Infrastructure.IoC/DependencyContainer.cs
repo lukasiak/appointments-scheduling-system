@@ -1,5 +1,8 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using System;
+﻿using App.Core.Application.Interfaces;
+using App.Core.Application.Services;
+using App.Core.Domain.Repositories;
+using App.Infrastructure.Persistence.Repositories;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace App.Infrastructure.IoC
 {
@@ -11,8 +14,10 @@ namespace App.Infrastructure.IoC
         public static void RegisterServices(IServiceCollection services)
         {
             //domain
+            services.AddScoped<IAppointmentRepository, AppointmentRepository>();
 
             //application
+            services.AddScoped<IAppointmentService, AppointmentService>();
         }
     }
 }
