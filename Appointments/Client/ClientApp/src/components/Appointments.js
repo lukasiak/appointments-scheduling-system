@@ -60,7 +60,7 @@ export class Appointments extends Component {
     }
 
     async populateData() {
-        fetch(`${BASE_API_URL}/appointments`)
+        fetch(`${BASE_API_URL}appointments`)
             .then(res => res.json())
             .then(jsonData => {
                 this.setState({
